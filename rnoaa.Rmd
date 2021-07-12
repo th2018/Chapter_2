@@ -1,0 +1,94 @@
+---
+title: "Untitled"
+author: "Tao"
+date: "5/13/2021"
+output: html_document
+---
+
+#load packages
+```{r}
+#The R package rnoaa is used to access NOAA NCDC climate data.
+#install.packages("rnoaa")
+library("rnoaa")
+library(rgdal)
+library("tidyverse")
+```
+
+#station list
+```{r}
+#This function returns an object with a dataframe with meta-information about all available GHCND weather stations.
+#stations<-ghcnd_stations()
+#stations
+#save(stations , file = "C:/Users/taohuang/Documents/Tao/Data/14319500/station.Rdata")
+load("C:/Users/taohuang/Documents/Tao/Data/14319500/station.Rdata")
+```
+
+# For precipitation stns
+```{r}
+prcp_stn<-stations[stations$element == "PRCP" ,]
+prcp_stn
+```
+
+# ID,NAME,LAT,LONG,ELEVATION
+```{r}
+prcp_stn_swat<-prcp_stn[,c("id", "latitude", "longitude", "elevation", "name")]
+prcp_stn_swat$original_id <- prcp_stn_swat$id
+colnames(prcp_stn_swat)<-c("ID","LAT","LONG","ELEVATION","NAME","original_id")
+prcp_stn_swat$ID <- dplyr::row_number(prcp_stn_swat$ID)
+prcp_stn_swat
+```
+
+#read watershed shp
+```{r}
+my_spdf <- readOGR( 
+  dsn=  "C:/Users/taohuang/Documents/Tao/Data/14319500" , 
+  layer="globalwatershed"
+  
+)
+my_spdf
+my_spdf@bbox
+
+```
+
+#nearby stns
+```{r}
+prcp_stn_swat_ws<-prcp_stn_swat[prcp_stn_swat$LAT >= (my_spdf@bbox[2,1]-0.1) &
+              prcp_stn_swat$LAT <= (my_spdf@bbox[2,2]+0.1) &
+              prcp_stn_swat$LONG  >= (my_spdf@bbox[1,1]-0.1) &
+              prcp_stn_swat$LONG  <= (my_spdf@bbox[1,2]+0.1)
+              ,]
+
+prcp_stn_swat_ws
+
+write.csv(prcp_stn_swat_ws[,c("ID","LAT","LONG","ELEVATION","NAME")], file = "C:/Users/taohuang/Documents/Tao/Data/14319500/prcp_stn_swat_ws.txt", row.names=FALSE)
+```
+
+```{r}
+date_min <- "2011-01-01"
+
+for (id in prcp_stn_swat_ws$original_id  ) {
+print(id)
+meteo<-meteo_tidy_ghcnd(stationid = id, date_min =  date_min )
+day1<-as.character(meteo$date[1])
+day1<-as.numeric(gsub("-", "", day1 ))
+meteo$prcp<- meteo$prcp/10 #prcp: Precipitation, in tenths of mm
+#day1_prcp<-c(day1,meteo$prcp)
+day1_prcp<-as.data.frame(day1_prcp)
+colnames(day1_prcp)<-day1
+ write.table(  day1_prcp,  file = paste("C:/Users/taohuang/Documents/Tao/Data/14319500/",id, ".txt", sep="")  ,  col.names=FALSE , row.names=FALSE)
+ 
+#write.csv( day1_prcp, file = paste("C:/Users/taohuang/Documents/Tao/Data/14319500/",id, ".txt", sep="")  , row.names=FALSE)
+
+}
+
+#ghcnd(stationid = "AGE00147704")
+
+```
+
+Gage Location Table
+
+http://colinmayfield.com/public/PDF_files/ArcSWAT_Documentation.pdf
+
+https://www.researchgate.net/post/What-is-the-correct-format-for-ArcSWAT-2012-weather-input-files
+
+https://www.ndsu.edu/pubweb/~zhulin/pdf/teaching/local%20rainfall.pdf
