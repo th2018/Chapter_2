@@ -1,0 +1,45 @@
+---
+title: "elevatr"
+author: "Tao"
+date: "5/6/2021"
+output: html_document
+---
+
+```{r}
+#The R package elevatr is used to access elevation data.
+#install.packages("elevatr")
+#install.packages('rgdal')
+library(rgdal)
+library("elevatr")
+library("raster")
+```
+
+#USGS gauge number
+```{r}
+stn<- 14362250
+```
+
+#read study area
+```{r}
+#my_spdf <- readOGR(   dsn=  paste("C:/Users/taohuang/Documents/Tao/Data/",stn,"/download(4)/layers",sep="")  , 
+#  layer="globalwatershed")
+
+my_spdf <- readOGR( 
+  dsn=  paste("C:/Users/taohuang/Desktop/layers",sep="")  , 
+  layer="globalwatershed"
+)
+
+my_spdf
+
+```
+
+```{r}
+usgs <- get_elev_raster(my_spdf, z = 14)
+usgs 
+
+writeRaster(usgs , paste("C:/Users/taohuang/Desktop/layers/usgs_dem.tif",sep=""), format="GTiff", overwrite=TRUE)
+
+#writeRaster(usgs , paste("C:/Users/taohuang/Documents/Tao/Data/",stn, "/usgs_dem.tif",sep=""), format="GTiff", overwrite=TRUE)
+  
+```
+
