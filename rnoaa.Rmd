@@ -17,11 +17,18 @@ library("tidyverse")
 #station list
 ```{r}
 #This function returns an object with a dataframe with meta-information about all available GHCND weather stations.
-#stations<-ghcnd_stations()
-#stations
-#save(stations , file = "C:/Users/taohuang/Documents/Tao/Data/14319500/station.Rdata")
-load("C:/Users/taohuang/Documents/Tao/Data/14319500/station.Rdata")
+stations<-ghcnd_stations()
+stations
+save(stations , file = "station.Rdata")
+#load("C:/Users/taohuang/Documents/Tao/Data/14319500/station.Rdata")
 ```
+
+```{r}
+test<-ncdc(datasetid='PRECIP_15', datatypeid='QPCP', locationid='ZIP:28801',
+   startdate = '2010-05-01', enddate = '2010-05-02')
+test
+```
+
 
 # For precipitation stns
 ```{r}
