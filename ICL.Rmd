@@ -19,6 +19,11 @@ library("EcoHydRology")
 ```
 
 ```{r}
+wt_ID<-read.csv("/Users/owner/Downloads/wt_ID.csv")
+wt_ID
+```
+
+```{r}
 siteNumber <- "13192200" 
 ChoptankInfo <- readNWISsite(siteNumber)
 #ChoptankInfo
