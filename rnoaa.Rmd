@@ -24,9 +24,12 @@ save(stations , file = "station.Rdata")
 ```
 
 ```{r}
-test<-ncdc(datasetid='PRECIP_15', datatypeid='QPCP', locationid='ZIP:28801',
-   startdate = '2010-05-01', enddate = '2010-05-02')
-test
+#test<-ncdc(datasetid='PRECIP_15', datatypeid='QPCP', locationid='ZIP:28801',  startdate = '2010-05-01', enddate = '2010-05-02',token='IlEwzFciUIPXKhvPenEKOtnVKXMvxsaV')
+
+#test
+
+ncdc(datasetid='GHCND', stationid='GHCND:USC00101408',startdate = '1950-10-01', enddate = '2000-09-01',token='IlEwzFciUIPXKhvPenEKOtnVKXMvxsaV')
+
 ```
 
 
